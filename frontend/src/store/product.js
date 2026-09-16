@@ -3,10 +3,19 @@ import { create } from "zustand";
 export const useProductStore = create((set) => ({
   products: [],
   error: null,
+  loading: false,
+  creating: false,
+  updating: false,
+  deletingId: null,
 
   setProducts: (products) => set({ products }),
 
   fetchProducts: async () => {
+    set({
+      loading: true,
+      error: null,
+    });
+
     try {
       const response = await fetch("http://localhost:5000/api/products");
 
@@ -21,9 +30,14 @@ export const useProductStore = create((set) => ({
         error: null,
       });
     } catch (error) {
-      set({
-        error: error.message,
-      });
+      set({ error: error.message || "Network error" });
+
+      return {
+        success: false,
+        message: error.message || "Network error",
+      };
+    } finally {
+      set({ loading: false });
     }
   },
 
@@ -32,72 +46,115 @@ export const useProductStore = create((set) => ({
       return { success: false, message: "Please fill in all fields." };
     }
 
-    const res = await fetch("http://localhost:5000/api/products", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(newProduct),
-    });
+    set({ creating: true });
 
-    if (!res.ok) {
+    try {
+      const res = await fetch("http://localhost:5000/api/products", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(newProduct),
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        return {
+          success: false,
+          message: data.message || "Failed to create product",
+        };
+      }
+
+      set((state) => ({
+        products: [...state.products, data.data],
+      }));
+
+      return {
+        success: true,
+        message: "Product created successfully",
+      };
+    } catch (error) {
       return {
         success: false,
-        message: data.message || "Failed to create product",
+        message: error.message || "Network error",
       };
+    } finally {
+      set({ creating: false });
     }
-
-    const data = await res.json();
-    set((state) => ({ products: [...state.products, data.data] }));
-
-    return { success: true, message: "Product created successfully" };
   },
 
   deleteProduct: async (id) => {
-    const res = await fetch(`http://localhost:5000/api/products/${id}`, {
-      method: "DELETE",
-    });
+    set({ deletingId: id });
 
-    const data = await res.json();
+    try {
+      const res = await fetch(`http://localhost:5000/api/products/${id}`, {
+        method: "DELETE",
+      });
 
-    if (!res.ok) {
+      const data = await res.json();
+
+      if (!res.ok) {
+        return {
+          success: false,
+          message: data.message || "Failed to delete product",
+        };
+      }
+
+      set((state) => ({
+        products: state.products.filter((product) => product._id !== id),
+      }));
+
+      return { success: true, message: "Product deleted successfully" };
+    } catch (error) {
       return {
         success: false,
-        message: data.message || "Failed to delete product",
+        message: error.message || "Network error",
       };
+    } finally {
+      set({ deletingId: null });
     }
-
-    set((state) => ({
-      products: state.products.filter((product) => product._id !== id),
-    }));
-
-    return { success: true, message: "Product deleted successfully" };
   },
 
   updateProduct: async (id, updatedProduct) => {
-    const res = await fetch(`http://localhost:5000/api/products/${id}`, {
-      method: "PUT",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(updatedProduct),
+    set({
+      updating: true,
+      error: null,
     });
 
-    const data = await res.json();
+    try {
+      const res = await fetch(`http://localhost:5000/api/products/${id}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(updatedProduct),
+      });
 
-    if (!res.ok) {
+      const data = await res.json();
+
+      if (!res.ok) {
+        return {
+          success: false,
+          message: data.message || "Failed to update product",
+        };
+      }
+
+      set((state) => ({
+        products: state.products.map((product) =>
+          product._id === id ? data.data : product,
+        ),
+        updating: false,
+      }));
+
+      return { success: true, message: "Product updated successfully" };
+    } catch (error) {
       return {
         success: false,
-        message: data.message || "Failed to update product",
+        message: error.message || "Network error",
       };
+    } finally {
+      set({ updating: false });
     }
-
-    set((state) => ({
-      products: state.products.map((product) =>
-        product._id === id ? data.data : product,
-      ),
-    }));
-
-    return { success: true, message: "Product updated successfully" };
   },
 }));

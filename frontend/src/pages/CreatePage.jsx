@@ -20,6 +20,7 @@ const CreatePage = () => {
     price: "",
     image: "",
   });
+  const creating = useProductStore((state) => state.creating);
 
   const handleAddProduct = async () => {
     const productToCreate = {
@@ -86,7 +87,12 @@ const CreatePage = () => {
                 }
               />
             </Field.Root>
-            <Button colorPalette="blue" onClick={handleAddProduct} w="full">
+            <Button
+              colorPalette="blue"
+              onClick={handleAddProduct}
+              w="full"
+              disabled={creating}
+            >
               Add Product
             </Button>
           </VStack>
