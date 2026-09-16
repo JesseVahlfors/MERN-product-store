@@ -1,8 +1,17 @@
-import './App.css'
+import HomePage from './pages/HomePage'
+import CreatePage from './pages/CreatePage'
+import { Routes, Route } from 'react-router-dom'
+import Navbar from './components/Navbar'
 
 function App() {
   return (
-    <h1>Product Store</h1>
+    <div>
+      <Navbar />
+      <Routes>
+        <Route path="/" element={<HomePage />} />
+        <Route path="/create" element={<CreatePage />} />
+      </Routes>
+    </div>
   )
 }
 
