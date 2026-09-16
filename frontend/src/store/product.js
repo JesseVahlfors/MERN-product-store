@@ -73,4 +73,31 @@ export const useProductStore = create((set) => ({
 
     return { success: true, message: "Product deleted successfully" };
   },
+
+  updateProduct: async (id, updatedProduct) => {
+    const res = await fetch(`http://localhost:5000/api/products/${id}`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(updatedProduct),
+    });
+
+    const data = await res.json();
+
+    if (!res.ok) {
+      return {
+        success: false,
+        message: data.message || "Failed to update product",
+      };
+    }
+
+    set((state) => ({
+      products: state.products.map((product) =>
+        product._id === id ? data.data : product,
+      ),
+    }));
+
+    return { success: true, message: "Product updated successfully" };
+  },
 }));

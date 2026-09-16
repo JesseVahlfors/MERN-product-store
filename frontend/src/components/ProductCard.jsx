@@ -1,10 +1,27 @@
-import { Image, Box, IconButton, Heading, Text, Flex } from "@chakra-ui/react";
+import {
+  Image,
+  Box,
+  IconButton,
+  Heading,
+  Text,
+  Flex,
+  Dialog,
+  Portal,
+  Button,
+  Input,
+  Field,
+  InputGroup,
+} from "@chakra-ui/react";
 import { LuPencil, LuTrash2 } from "react-icons/lu";
 import { useProductStore } from "../store/product";
 import { toaster } from "./ui/toaster";
+import { useState } from "react";
 
 const ProductCard = ({ product }) => {
+  const [updatedProduct, setUpdatedProduct] = useState(product);
   const deleteProduct = useProductStore((state) => state.deleteProduct);
+  const [open, setOpen] = useState(false);
+  const updateProduct = useProductStore((state) => state.updateProduct);
 
   const handleDeleteProduct = async (id) => {
     const result = await deleteProduct(id);
@@ -14,6 +31,32 @@ const ProductCard = ({ product }) => {
       description: result.message,
       type: result.success ? "success" : "error",
     });
+  };
+
+  const handleUpdateProduct = async (id, productData) => {
+    const updatedProductData = {
+      ...productData,
+      price: Number(productData.price),
+    };
+    const result = await updateProduct(id, updatedProductData);
+
+    toaster.create({
+      title: result.success ? "Success" : "Error",
+      description: result.message,
+      type: result.success ? "success" : "error",
+    });
+
+    if (result.success) {
+      setOpen(false);
+    }
+  };
+
+  const handleOpenChange = (details) => {
+    setOpen(details.open);
+
+    if (details.open) {
+      setUpdatedProduct(product);
+    }
   };
 
   return (
@@ -36,9 +79,86 @@ const ProductCard = ({ product }) => {
         {product.price} €
       </Text>
       <Flex gap={2}>
-        <IconButton aria-label="Edit product" colorPalette="blue">
-          <LuPencil />
-        </IconButton>
+        <Dialog.Root open={open} onOpenChange={handleOpenChange}>
+          <Dialog.Trigger asChild>
+            <IconButton aria-label="Edit product">
+              <LuPencil />
+            </IconButton>
+          </Dialog.Trigger>
+          <Portal>
+            <Dialog.Backdrop />
+            <Dialog.Positioner>
+              <Dialog.Content>
+                <Dialog.Header>
+                  <Dialog.Title>Update Product</Dialog.Title>
+                </Dialog.Header>
+
+                <Dialog.Body>
+                  <Field.Root>
+                    <Field.Label>Product name</Field.Label>
+                    <Input
+                      placeholder="Product Name"
+                      name="name"
+                      value={updatedProduct.name}
+                      onChange={(e) =>
+                        setUpdatedProduct({
+                          ...updatedProduct,
+                          name: e.target.value,
+                        })
+                      }
+                    />
+                  </Field.Root>
+                  <Field.Root>
+                    <Field.Label>Price</Field.Label>
+                    <InputGroup startElement="€" endElement="EUR">
+                      <Input
+                        placeholder="Price"
+                        name="price"
+                        type="number"
+                        value={updatedProduct.price}
+                        onChange={(e) =>
+                          setUpdatedProduct({
+                            ...updatedProduct,
+                            price: e.target.value,
+                          })
+                        }
+                      />
+                    </InputGroup>
+                  </Field.Root>
+                  <Field.Root>
+                    <Field.Label>Image URL</Field.Label>
+                    <Input
+                      placeholder="Image URL"
+                      name="image"
+                      value={updatedProduct.image}
+                      onChange={(e) =>
+                        setUpdatedProduct({
+                          ...updatedProduct,
+                          image: e.target.value,
+                        })
+                      }
+                    />
+                  </Field.Root>
+                </Dialog.Body>
+
+                <Dialog.Footer>
+                  <Button
+                    colorPalette="blue"
+                    mr={3}
+                    onClick={() =>
+                      handleUpdateProduct(product._id, updatedProduct)
+                    }
+                  >
+                    Update
+                  </Button>
+                  <Dialog.ActionTrigger asChild>
+                    <Button variant="ghost">Cancel</Button>
+                  </Dialog.ActionTrigger>
+                </Dialog.Footer>
+              </Dialog.Content>
+            </Dialog.Positioner>
+          </Portal>
+        </Dialog.Root>
         <IconButton
           aria-label="Delete product"
           colorPalette="red"

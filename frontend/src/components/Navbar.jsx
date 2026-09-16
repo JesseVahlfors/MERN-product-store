@@ -1,28 +1,28 @@
-import { Button, Flex, Heading } from "@chakra-ui/react";
+import { Flex, Heading, IconButton } from "@chakra-ui/react";
 import { NavLink } from "react-router-dom";
 import { ColorModeButton } from "./ui/color-mode";
+import { LuPlus } from "react-icons/lu";
 
 const Navbar = () => {
   return (
     <Flex gap="4" padding="4" justify="space-between" align="center">
-      <Heading size="5xl">Product Store</Heading>
-        <Flex gap="2">
-            <NavLink   to="/">
-              {({ isActive }) => (
-                <Button variant={isActive ? "solid" : "ghost"}>
-                  Home
-                </Button>
-              )}
-            </NavLink>
-            <NavLink  to="/create">
-              {({ isActive }) => (
-                <Button variant={isActive ? "solid" : "ghost"}>
-                  Create
-                </Button>
-              )}
-            </NavLink>
-            <ColorModeButton />
-        </Flex>
+      <NavLink to="/">
+        <Heading size="5xl">Product Store</Heading>
+      </NavLink>
+      <Flex gap="2">
+        <NavLink to="/create">
+          {({ isActive }) => (
+            <IconButton
+              aria-label="Create product"
+              variant={isActive ? "outline" : "solid"}
+            >
+              <LuPlus size={20} />
+            </IconButton>
+          )}
+        </NavLink>
+
+        <ColorModeButton variant="outline" />
+      </Flex>
     </Flex>
   );
 };
