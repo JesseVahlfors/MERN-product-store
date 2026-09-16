@@ -64,11 +64,21 @@ const ProductCard = ({ product }) => {
   return (
     <Box
       w={{ base: "100%", sm: "320px" }}
-      shadow="lg"
-      rounded="lg"
+      bg="white"
+      borderWidth="1px"
+      borderColor="gray.200"
+      _dark={{
+        bg: "blue.900",
+        borderColor: "whiteAlpha.200",
+      }}
+      shadow="md"
+      rounded="xl"
       overflow="hidden"
-      transition="all 0.3s"
-      _hover={{ transform: "translateY(-5px)", shadow: "xl" }}
+      transition="all 0.2s"
+      _hover={{
+        transform: "translateY(-4px)",
+        shadow: "xl",
+      }}
     >
       <Image
         src={product.image}
@@ -77,14 +87,24 @@ const ProductCard = ({ product }) => {
         aspectRatio={4 / 3}
       ></Image>
       <Box p={4}>
-        <Heading>{product.name}</Heading>
+        <Heading size="lg">{product.name}</Heading>
         <Text fontWeight="bold" fontSize="xl" mb={4}>
           {product.price} €
         </Text>
         <Flex gap={2}>
           <Dialog.Root open={open} onOpenChange={handleOpenChange}>
             <Dialog.Trigger asChild>
-              <IconButton aria-label="Edit product">
+              <IconButton
+                aria-label="Edit product"
+                bg="blue.950"
+                color="white"
+                _hover={{ bg: "blue.900" }}
+                _dark={{
+                  bg: "white",
+                  color: "blue.950",
+                  _hover: { bg: "blue.200" },
+                }}
+              >
                 <LuPencil />
               </IconButton>
             </Dialog.Trigger>

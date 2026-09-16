@@ -11,7 +11,6 @@ import {
 import { useState } from "react";
 import { useProductStore } from "../store/product";
 import { toaster } from "../components/ui/toaster";
-import { useColorModeValue } from "../components/ui/color-mode";
 
 const CreatePage = () => {
   const createProduct = useProductStore((state) => state.createProduct);
@@ -42,19 +41,28 @@ const CreatePage = () => {
   };
 
   return (
-    <Container maxW={"container.sm"}>
+    <Container maxW="lg" py={10}>
       <VStack gap={8}>
-        <Heading as={"h1"} size={"2xl"} textAlign={"center"} mb={8}>
+        <Heading
+          size="3xl"
+          bgGradient="to-r"
+          gradientFrom="cyan.400"
+          gradientTo="blue.600"
+          bgClip="text"
+        >
           Create New Product
         </Heading>
         <Box
-          w={"full"}
-          bg={useColorModeValue("white", "gray.800")}
-          p={6}
-          rounded={"lg"}
-          shadow={"md"}
+          w="full"
+          p={{ base: 5, md: 8 }}
+          bg="white"
+          _dark={{ bg: "blue.900" }}
+          borderWidth="1px"
+          borderColor="gray.200"
+          rounded="xl"
+          shadow="lg"
         >
-          <VStack spacing={4}>
+          <VStack gap={5} align="stretch">
             <Field.Root>
               <Field.Label>Product name</Field.Label>
               <Input
