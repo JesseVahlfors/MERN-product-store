@@ -22,8 +22,8 @@ export const useProductStore = create((set) => ({
   error: null,
   loading: false,
   creating: false,
-  updating: false,
-  deletingId: null,
+  deletingIds: new Set(),
+  updatingIds: new Set(),
 
   setProducts: (products) => set({ products }),
 
@@ -188,7 +188,6 @@ export const useProductStore = create((set) => ({
         products: state.products.map((product) =>
           product._id === id ? data.data : product,
         ),
-        updating: false,
       }));
 
       return { success: true, message: "Product updated successfully" };

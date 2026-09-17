@@ -14,14 +14,15 @@ import { toaster } from "../components/ui/toaster";
 
 const CreatePage = () => {
   const createProduct = useProductStore((state) => state.createProduct);
+  const creating = useProductStore((state) => state.creating);
   const [newProduct, setNewProduct] = useState({
     name: "",
     price: "",
     image: "",
   });
-  const creating = useProductStore((state) => state.creating);
 
-  const handleAddProduct = async () => {
+  const handleAddProduct = async (event) => {
+    event.preventDefault();
     const productToCreate = {
       ...newProduct,
       price: Number(newProduct.price),
@@ -62,48 +63,56 @@ const CreatePage = () => {
           rounded="xl"
           shadow="lg"
         >
-          <VStack gap={5} align="stretch">
-            <Field.Root>
-              <Field.Label>Product name</Field.Label>
-              <Input
-                value={newProduct.name}
-                onChange={(e) =>
-                  setNewProduct({ ...newProduct, name: e.target.value })
-                }
-              />
-            </Field.Root>
-
-            <Field.Root>
-              <Field.Label>Price</Field.Label>
-              <InputGroup startElement="€" endElement="EUR">
+          <form onSubmit={handleAddProduct}>
+            <VStack gap={5} align="stretch">
+              <Field.Root>
+                <Field.Label>Product name</Field.Label>
                 <Input
-                  type="number"
-                  value={newProduct.price}
+                  value={newProduct.name}
+                  disabled={creating}
                   onChange={(e) =>
-                    setNewProduct({ ...newProduct, price: e.target.value })
+                    setNewProduct({ ...newProduct, name: e.target.value })
                   }
                 />
-              </InputGroup>
-            </Field.Root>
+              </Field.Root>
 
-            <Field.Root>
-              <Field.Label>Image URL</Field.Label>
-              <Input
-                value={newProduct.image}
-                onChange={(e) =>
-                  setNewProduct({ ...newProduct, image: e.target.value })
-                }
-              />
-            </Field.Root>
-            <Button
-              colorPalette="blue"
-              onClick={handleAddProduct}
-              w="full"
-              disabled={creating}
-            >
-              Add Product
-            </Button>
-          </VStack>
+              <Field.Root>
+                <Field.Label>Price</Field.Label>
+                <InputGroup startElement="€" endElement="EUR">
+                  <Input
+                    type="number"
+                    disabled={creating}
+                    min="0"
+                    value={newProduct.price}
+                    onChange={(e) =>
+                      setNewProduct({ ...newProduct, price: e.target.value })
+                    }
+                  />
+                </InputGroup>
+              </Field.Root>
+
+              <Field.Root>
+                <Field.Label>Image URL</Field.Label>
+                <Input
+                  value={newProduct.image}
+                  disabled={creating}
+                  onChange={(e) =>
+                    setNewProduct({ ...newProduct, image: e.target.value })
+                  }
+                />
+              </Field.Root>
+
+              <Button
+                type="submit"
+                colorPalette="blue"
+                w="full"
+                loading={creating}
+                disabled={creating}
+              >
+                Add Product
+              </Button>
+            </VStack>
+          </form>
         </Box>
       </VStack>
     </Container>

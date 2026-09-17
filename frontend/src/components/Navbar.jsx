@@ -27,25 +27,23 @@ const Navbar = () => {
             </Heading>
           </NavLink>
           <Flex gap="2">
-            <NavLink to="/create">
-              {({ isActive }) => (
-                <IconButton
-                  aria-label="Create product"
-                  variant={isActive ? "outline" : "solid"}
-                  size="lg"
-                  bg="blue.950"
-                  color="white"
-                  _hover={{ bg: "blue.700" }}
-                  _dark={{
-                    bg: "white",
-                    color: "blue.950",
-                    _hover: { bg: "blue.200" },
-                  }}
-                >
-                  <LuPlus />
-                </IconButton>
-              )}
-            </NavLink>
+            <IconButton
+              asChild
+              aria-label="Create product"
+              size="lg"
+              bg="blue.950"
+              color="white"
+              _hover={{ bg: "blue.700" }}
+              _dark={{
+                bg: "white",
+                color: "blue.950",
+                _hover: { bg: "blue.200" },
+              }}
+            >
+              <NavLink to="/create">
+                <LuPlus />
+              </NavLink>
+            </IconButton>
 
             <ColorModeButton
               bg="blue.950"

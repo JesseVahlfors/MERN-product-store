@@ -37,12 +37,15 @@ const ProductCard = ({ product }) => {
     });
   };
 
-  const handleUpdateProduct = async (id, productData) => {
+  const handleUpdateProduct = async (event) => {
+    event.preventDefault();
+
     const updatedProductData = {
-      ...productData,
-      price: Number(productData.price),
+      ...updatedProduct,
+      price: Number(updatedProduct.price),
     };
-    const result = await updateProduct(id, updatedProductData);
+
+    const result = await updateProduct(product._id, updatedProductData);
 
     toaster.create({
       title: result.success ? "Success" : "Error",
@@ -56,6 +59,8 @@ const ProductCard = ({ product }) => {
   };
 
   const handleOpenChange = (details) => {
+    if (isUpdating) return;
+
     setOpen(details.open);
 
     if (details.open) {
@@ -84,6 +89,7 @@ const ProductCard = ({ product }) => {
     >
       <Image
         src={product.image}
+        alt={product.name}
         w="full"
         objectFit="cover"
         aspectRatio={4 / 3}
@@ -117,71 +123,75 @@ const ProductCard = ({ product }) => {
                   <Dialog.Header>
                     <Dialog.Title>Update Product</Dialog.Title>
                   </Dialog.Header>
-
-                  <Dialog.Body>
-                    <Field.Root>
-                      <Field.Label>Product name</Field.Label>
-                      <Input
-                        placeholder="Product Name"
-                        name="name"
-                        value={updatedProduct.name}
-                        onChange={(e) =>
-                          setUpdatedProduct({
-                            ...updatedProduct,
-                            name: e.target.value,
-                          })
-                        }
-                      />
-                    </Field.Root>
-                    <Field.Root>
-                      <Field.Label>Price</Field.Label>
-                      <InputGroup startElement="€" endElement="EUR">
+                  <form onSubmit={handleUpdateProduct}>
+                    <Dialog.Body>
+                      <Field.Root>
+                        <Field.Label>Product name</Field.Label>
                         <Input
-                          placeholder="Price"
-                          name="price"
-                          type="number"
-                          value={updatedProduct.price}
+                          placeholder="Product Name"
+                          name="name"
+                          value={updatedProduct.name}
+                          disabled={isUpdating}
                           onChange={(e) =>
                             setUpdatedProduct({
                               ...updatedProduct,
-                              price: e.target.value,
+                              name: e.target.value,
                             })
                           }
                         />
-                      </InputGroup>
-                    </Field.Root>
-                    <Field.Root>
-                      <Field.Label>Image URL</Field.Label>
-                      <Input
-                        placeholder="Image URL"
-                        name="image"
-                        value={updatedProduct.image}
-                        onChange={(e) =>
-                          setUpdatedProduct({
-                            ...updatedProduct,
-                            image: e.target.value,
-                          })
-                        }
-                      />
-                    </Field.Root>
-                  </Dialog.Body>
+                      </Field.Root>
+                      <Field.Root>
+                        <Field.Label>Price</Field.Label>
+                        <InputGroup startElement="€" endElement="EUR">
+                          <Input
+                            placeholder="Price"
+                            name="price"
+                            type="number"
+                            value={updatedProduct.price}
+                            disabled={isUpdating}
+                            onChange={(e) =>
+                              setUpdatedProduct({
+                                ...updatedProduct,
+                                price: e.target.value,
+                              })
+                            }
+                          />
+                        </InputGroup>
+                      </Field.Root>
+                      <Field.Root>
+                        <Field.Label>Image URL</Field.Label>
+                        <Input
+                          placeholder="Image URL"
+                          name="image"
+                          value={updatedProduct.image}
+                          disabled={isUpdating}
+                          onChange={(e) =>
+                            setUpdatedProduct({
+                              ...updatedProduct,
+                              image: e.target.value,
+                            })
+                          }
+                        />
+                      </Field.Root>
+                    </Dialog.Body>
 
-                  <Dialog.Footer>
-                    <Button
-                      colorPalette="blue"
-                      mr={3}
-                      onClick={() =>
-                        handleUpdateProduct(product._id, updatedProduct)
-                      }
-                      loading={isUpdating}
-                      disabled={isUpdating}
-                    >
-                      Update
-                    </Button>
-                    <Dialog.ActionTrigger asChild>
-                      <Button variant="ghost">Cancel</Button>
-                    </Dialog.ActionTrigger>
-                  </Dialog.Footer>
+                    <Dialog.Footer>
+                      <Button
+                        type="submit"
+                        colorPalette="blue"
+                        mr={3}
+                        loading={isUpdating}
+                        disabled={isUpdating}
+                      >
+                        Update
+                      </Button>
+                      <Dialog.ActionTrigger asChild>
+                        <Button variant="ghost" disabled={isUpdating}>
+                          Cancel
+                        </Button>
+                      </Dialog.ActionTrigger>
+                    </Dialog.Footer>
+                  </form>
                 </Dialog.Content>
               </Dialog.Positioner>
             </Portal>
@@ -190,8 +200,8 @@ const ProductCard = ({ product }) => {
             aria-label="Delete product"
             colorPalette="red"
             onClick={() => handleDeleteProduct(product._id)}
+            disabled={isUpdating}
             loading={isDeleting}
-            disabled={isDeleting}
           >
             <LuTrash2 />
           </IconButton>
