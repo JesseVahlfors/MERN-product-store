@@ -118,7 +118,7 @@ npm start
 
 ## Live Demo
 
-A deployed version will be available here after deployment.
+A deployed version is available at https://product-store.jessevahlfors.com.
 
 ## Purpose
 
