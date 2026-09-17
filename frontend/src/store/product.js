@@ -17,7 +17,7 @@ export const useProductStore = create((set) => ({
     });
 
     try {
-      const response = await fetch("http://localhost:5000/api/products");
+      const response = await fetch("/api/products");
 
       if (!response.ok) {
         throw new Error("Failed to fetch products");
@@ -49,7 +49,7 @@ export const useProductStore = create((set) => ({
     set({ creating: true });
 
     try {
-      const res = await fetch("http://localhost:5000/api/products", {
+      const res = await fetch("/api/products", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -88,7 +88,7 @@ export const useProductStore = create((set) => ({
     set({ deletingId: id });
 
     try {
-      const res = await fetch(`http://localhost:5000/api/products/${id}`, {
+      const res = await fetch(`/api/products/${id}`, {
         method: "DELETE",
       });
 
@@ -123,7 +123,7 @@ export const useProductStore = create((set) => ({
     });
 
     try {
-      const res = await fetch(`http://localhost:5000/api/products/${id}`, {
+      const res = await fetch(`/api/products/${id}`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
