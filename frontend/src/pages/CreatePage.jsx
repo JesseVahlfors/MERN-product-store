@@ -98,6 +98,13 @@ const CreatePage = () => {
                 <Field.Label>Product name</Field.Label>
                 <Input
                   value={newProduct.name}
+                  borderColor={{ base: "gray.300", _dark: "gray.600" }}
+                  _hover={{
+                    borderColor: { base: "gray.400", _dark: "gray.500" },
+                  }}
+                  _focus={{
+                    borderColor: "blue.500",
+                  }}
                   disabled={creating}
                   onChange={(e) =>
                     setNewProduct({ ...newProduct, name: e.target.value })
@@ -113,6 +120,13 @@ const CreatePage = () => {
                     disabled={creating}
                     min="0"
                     value={newProduct.price}
+                    borderColor={{ base: "gray.300", _dark: "gray.600" }}
+                    _hover={{
+                      borderColor: { base: "gray.400", _dark: "gray.500" },
+                    }}
+                    _focus={{
+                      borderColor: "blue.500",
+                    }}
                     onChange={(e) =>
                       setNewProduct({ ...newProduct, price: e.target.value })
                     }
@@ -124,6 +138,13 @@ const CreatePage = () => {
                 <Field.Label>Image URL</Field.Label>
                 <Input
                   value={newProduct.image}
+                  borderColor={{ base: "gray.300", _dark: "gray.600" }}
+                  _hover={{
+                    borderColor: { base: "gray.400", _dark: "gray.500" },
+                  }}
+                  _focus={{
+                    borderColor: "blue.500",
+                  }}
                   disabled={creating}
                   onChange={(e) =>
                     setNewProduct({ ...newProduct, image: e.target.value })

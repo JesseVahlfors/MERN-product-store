@@ -131,6 +131,16 @@ const ProductCard = ({ product }) => {
                           placeholder="Product Name"
                           name="name"
                           value={updatedProduct.name}
+                          borderColor={{ base: "gray.300", _dark: "gray.600" }}
+                          _hover={{
+                            borderColor: {
+                              base: "gray.400",
+                              _dark: "gray.500",
+                            },
+                          }}
+                          _focus={{
+                            borderColor: "blue.500",
+                          }}
                           disabled={isUpdating}
                           onChange={(e) =>
                             setUpdatedProduct({
@@ -148,6 +158,19 @@ const ProductCard = ({ product }) => {
                             name="price"
                             type="number"
                             value={updatedProduct.price}
+                            borderColor={{
+                              base: "gray.300",
+                              _dark: "gray.600",
+                            }}
+                            _hover={{
+                              borderColor: {
+                                base: "gray.400",
+                                _dark: "gray.500",
+                              },
+                            }}
+                            _focus={{
+                              borderColor: "blue.500",
+                            }}
                             disabled={isUpdating}
                             onChange={(e) =>
                               setUpdatedProduct({
@@ -164,6 +187,16 @@ const ProductCard = ({ product }) => {
                           placeholder="Image URL"
                           name="image"
                           value={updatedProduct.image}
+                          borderColor={{ base: "gray.300", _dark: "gray.600" }}
+                          _hover={{
+                            borderColor: {
+                              base: "gray.400",
+                              _dark: "gray.500",
+                            },
+                          }}
+                          _focus={{
+                            borderColor: "blue.500",
+                          }}
                           disabled={isUpdating}
                           onChange={(e) =>
                             setUpdatedProduct({
