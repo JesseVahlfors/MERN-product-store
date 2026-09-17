@@ -22,6 +22,7 @@ const HomePage = () => {
   const fetchProducts = useProductStore((state) => state.fetchProducts);
   const createProduct = useProductStore((state) => state.createProduct);
   const [loadingSamples, setLoadingSamples] = useState(false);
+  const showSkeletons = loading && products.length === 0;
 
   const sampleProducts = [
     {
@@ -109,7 +110,7 @@ const HomePage = () => {
         )}
 
         <Flex gap={6} wrap="wrap" justify="center">
-          {loading
+          {showSkeletons
             ? Array.from({ length: 3 }).map((_, index) => (
                 <ProductCardSkeleton key={index} />
               ))

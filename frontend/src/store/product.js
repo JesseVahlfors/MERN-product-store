@@ -72,7 +72,6 @@ export const useProductStore = create((set) => ({
   createProduct: async (newProduct) => {
     if (
       !newProduct.name?.trim() ||
-      !newProduct.image?.trim() ||
       typeof newProduct.price !== "number" ||
       !Number.isFinite(newProduct.price) ||
       newProduct.price < 0

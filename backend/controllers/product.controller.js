@@ -1,6 +1,9 @@
 import Product from "../models/product.model.js";
 import mongoose from "mongoose";
 
+const DEFAULT_IMAGE =
+  "https://images.unsplash.com/photo-1546868871-7041f2a55e12?q=80&w=928&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D";
+
 const isValidImageUrl = (image) => {
   try {
     const url = new URL(image);
@@ -31,9 +34,7 @@ export const createProduct = async (req, res) => {
   if (
     typeof name !== "string" ||
     !name.trim() ||
-    typeof image !== "string" ||
-    !image.trim() ||
-    !isValidImageUrl(image) ||
+    (image?.trim() && !isValidImageUrl(image)) ||
     typeof price !== "number" ||
     !Number.isFinite(price) ||
     price < 0
@@ -44,10 +45,12 @@ export const createProduct = async (req, res) => {
     });
   }
 
+  const productImage = image?.trim() || DEFAULT_IMAGE;
+
   const newProduct = new Product({
     name: name.trim(),
     price,
-    image: image.trim(),
+    image: productImage,
   });
 
   try {
@@ -74,9 +77,7 @@ export const updateProduct = async (req, res) => {
   if (
     typeof name !== "string" ||
     !name.trim() ||
-    typeof image !== "string" ||
-    !image.trim() ||
-    !isValidImageUrl(image) ||
+    (image?.trim() && !isValidImageUrl(image)) ||
     typeof price !== "number" ||
     !Number.isFinite(price) ||
     price < 0
@@ -94,6 +95,8 @@ export const updateProduct = async (req, res) => {
     });
   }
 
+  const productImage = image?.trim() || DEFAULT_IMAGE;
+
   try {
     const updatedProduct = await Product.findByIdAndUpdate(
       id,
@@ -101,7 +104,7 @@ export const updateProduct = async (req, res) => {
         $set: {
           name: name.trim(),
           price,
-          image: image.trim(),
+          image: productImage,
         },
       },
       { returnDocument: "after", runValidators: true },
