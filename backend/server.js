@@ -1,5 +1,4 @@
 import express from "express";
-import cors from "cors";
 import dotenv from "dotenv";
 import connectDB from "./config/db.js";
 import productRoutes from "./routes/product.route.js";
@@ -21,11 +20,14 @@ const apiLimiter = rateLimit({
 });
 
 const app = express();
+if (process.env.NODE_ENV === "production") {
+  app.set("trust proxy", 1);
+}
 const port = process.env.PORT || 5000;
+
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-app.use(cors());
 app.use(express.json({ limit: "10kb" }));
 
 app.use("/api", apiLimiter);
