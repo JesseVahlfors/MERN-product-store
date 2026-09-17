@@ -1,5 +1,22 @@
 import { create } from "zustand";
 
+let latestFetchId = 0;
+
+const readResponse = async (response) => {
+  const contentType = response.headers.get("content-type");
+
+  if (contentType?.includes("application/json")) {
+    return await response.json();
+  }
+
+  const text = await response.text();
+
+  return {
+    success: false,
+    message: text || "Unexpected server response",
+  };
+};
+
 export const useProductStore = create((set) => ({
   products: [],
   error: null,
@@ -11,25 +28,34 @@ export const useProductStore = create((set) => ({
   setProducts: (products) => set({ products }),
 
   fetchProducts: async () => {
+    const fetchId = ++latestFetchId;
+
     set({
       loading: true,
       error: null,
     });
 
     try {
-      const response = await fetch("/api/products");
+      const res = await fetch("/api/products");
+      const data = await readResponse(res);
 
-      if (!response.ok) {
-        throw new Error("Failed to fetch products");
+      if (!res.ok || !Array.isArray(data.data)) {
+        throw new Error(data.message || "Invalid products response");
       }
 
-      const data = await response.json();
+      if (fetchId !== latestFetchId) {
+        return;
+      }
 
       set({
         products: data.data,
         error: null,
       });
     } catch (error) {
+      if (fetchId !== latestFetchId) {
+        return;
+      }
+
       set({ error: error.message || "Network error" });
 
       return {
@@ -37,13 +63,24 @@ export const useProductStore = create((set) => ({
         message: error.message || "Network error",
       };
     } finally {
-      set({ loading: false });
+      if (fetchId === latestFetchId) {
+        set({ loading: false });
+      }
     }
   },
 
   createProduct: async (newProduct) => {
-    if (!newProduct.name || !newProduct.image || !newProduct.price) {
-      return { success: false, message: "Please fill in all fields." };
+    if (
+      !newProduct.name?.trim() ||
+      !newProduct.image?.trim() ||
+      typeof newProduct.price !== "number" ||
+      !Number.isFinite(newProduct.price) ||
+      newProduct.price < 0
+    ) {
+      return {
+        success: false,
+        message: "Please provide valid product data.",
+      };
     }
 
     set({ creating: true });
@@ -57,7 +94,7 @@ export const useProductStore = create((set) => ({
         body: JSON.stringify(newProduct),
       });
 
-      const data = await res.json();
+      const data = await readResponse(res);
 
       if (!res.ok) {
         return {
@@ -85,14 +122,16 @@ export const useProductStore = create((set) => ({
   },
 
   deleteProduct: async (id) => {
-    set({ deletingId: id });
+    set((state) => ({
+      deletingIds: new Set([...state.deletingIds, id]),
+    }));
 
     try {
       const res = await fetch(`/api/products/${id}`, {
         method: "DELETE",
       });
 
-      const data = await res.json();
+      const data = await readResponse(res);
 
       if (!res.ok) {
         return {
@@ -112,15 +151,20 @@ export const useProductStore = create((set) => ({
         message: error.message || "Network error",
       };
     } finally {
-      set({ deletingId: null });
+      set((state) => {
+        const deletingIds = new Set(state.deletingIds);
+        deletingIds.delete(id);
+
+        return { deletingIds };
+      });
     }
   },
 
   updateProduct: async (id, updatedProduct) => {
-    set({
-      updating: true,
+    set((state) => ({
+      updatingIds: new Set([...state.updatingIds, id]),
       error: null,
-    });
+    }));
 
     try {
       const res = await fetch(`/api/products/${id}`, {
@@ -131,7 +175,7 @@ export const useProductStore = create((set) => ({
         body: JSON.stringify(updatedProduct),
       });
 
-      const data = await res.json();
+      const data = await readResponse(res);
 
       if (!res.ok) {
         return {
@@ -154,7 +198,12 @@ export const useProductStore = create((set) => ({
         message: error.message || "Network error",
       };
     } finally {
-      set({ updating: false });
+      set((state) => {
+        const updatingIds = new Set(state.updatingIds);
+        updatingIds.delete(id);
+
+        return { updatingIds };
+      });
     }
   },
 }));

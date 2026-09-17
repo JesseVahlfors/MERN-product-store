@@ -22,8 +22,10 @@ const ProductCard = ({ product }) => {
   const deleteProduct = useProductStore((state) => state.deleteProduct);
   const [open, setOpen] = useState(false);
   const updateProduct = useProductStore((state) => state.updateProduct);
-  const updating = useProductStore((state) => state.updating);
-  const deletingId = useProductStore((state) => state.deletingId);
+  const updatingIds = useProductStore((state) => state.updatingIds);
+  const isUpdating = updatingIds.has(product._id);
+  const deletingIds = useProductStore((state) => state.deletingIds);
+  const isDeleting = deletingIds.has(product._id);
 
   const handleDeleteProduct = async (id) => {
     const result = await deleteProduct(id);
@@ -171,7 +173,8 @@ const ProductCard = ({ product }) => {
                       onClick={() =>
                         handleUpdateProduct(product._id, updatedProduct)
                       }
-                      loading={updating}
+                      loading={isUpdating}
+                      disabled={isUpdating}
                     >
                       Update
                     </Button>
@@ -187,7 +190,8 @@ const ProductCard = ({ product }) => {
             aria-label="Delete product"
             colorPalette="red"
             onClick={() => handleDeleteProduct(product._id)}
-            disabled={deletingId === product._id}
+            loading={isDeleting}
+            disabled={isDeleting}
           >
             <LuTrash2 />
           </IconButton>
