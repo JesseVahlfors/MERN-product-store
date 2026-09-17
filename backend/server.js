@@ -5,8 +5,20 @@ import connectDB from "./config/db.js";
 import productRoutes from "./routes/product.route.js";
 import path from "path";
 import { fileURLToPath } from "url";
+import { rateLimit } from "express-rate-limit";
 
 dotenv.config();
+
+const apiLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  limit: 100,
+  standardHeaders: "draft-8",
+  legacyHeaders: false,
+  message: {
+    success: false,
+    message: "Too many requests. Please try again later.",
+  },
+});
 
 const app = express();
 const port = process.env.PORT || 5000;
@@ -14,8 +26,9 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 app.use(cors());
-app.use(express.json());
+app.use(express.json({ limit: "10kb" }));
 
+app.use("/api", apiLimiter);
 app.use("/api/products", productRoutes);
 
 app.use("/api", (req, res) => {

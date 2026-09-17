@@ -1,6 +1,15 @@
 import Product from "../models/product.model.js";
 import mongoose from "mongoose";
 
+const isValidImageUrl = (image) => {
+  try {
+    const url = new URL(image);
+    return url.protocol === "http:" || url.protocol === "https:";
+  } catch {
+    return false;
+  }
+};
+
 export const getProducts = async (req, res) => {
   try {
     const products = await Product.find();
@@ -24,6 +33,7 @@ export const createProduct = async (req, res) => {
     !name.trim() ||
     typeof image !== "string" ||
     !image.trim() ||
+    !isValidImageUrl(image) ||
     typeof price !== "number" ||
     !Number.isFinite(price) ||
     price < 0
@@ -66,6 +76,7 @@ export const updateProduct = async (req, res) => {
     !name.trim() ||
     typeof image !== "string" ||
     !image.trim() ||
+    !isValidImageUrl(image) ||
     typeof price !== "number" ||
     !Number.isFinite(price) ||
     price < 0
